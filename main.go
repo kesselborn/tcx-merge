@@ -16,16 +16,21 @@ type TPX struct {
 type Trackpoint struct {
 	Time     string
 	Position struct {
-		LatitudeDegrees  string
-		LongitudeDegrees string
-	}
-	AltitudeMeters string
-	DistanceMeters string
-	Extensions     struct {
+		LatitudeDegrees  string `xml:",omitempty"`
+		LongitudeDegrees string `xml:",omitempty"`
+	} `xml:",omitempty"`
+	AltitudeMeters string `xml:",omitempty"`
+	DistanceMeters string `xml:",omitempty"`
+	HeartRateBpm   struct {
+		Value string `xml:",omitempty"`
+	} `xml:",omitempty"`
+	Extensions struct {
 		TPX TPX
-	}
+	} `xml:",omitempty"`
 }
 
+// when reading the xml, namespacing does not work ... so we read in w/o
+// namespace information but marshal back with namespace info
 func (t TPX) MarshalXML(e *xml.Encoder, start xml.StartElement) error {
 	x := struct {
 		XMLName    xml.Name `xml:"ns3:TPX"`
@@ -50,15 +55,22 @@ type TCX struct {
 			Sport string `xml:"Sport,attr"`
 			Id    string
 			Lap   []struct {
-				StartTime        string `xml:"StartTime,attr"`
-				TotalTimeSeconds string
-				DistanceMeters   string
-				Calories         string
-				Intensity        string
-				TriggerMethod    string
-				Track            struct {
+				StartTime           string `xml:"StartTime,attr"`
+				TotalTimeSeconds    string `xml:",omitempty"`
+				DistanceMeters      string `xml:",omitempty"`
+				MaximumSpeed        string `xml:",omitempty"`
+				Calories            string `xml:",omitempty"`
+				AverageHeartRateBpm struct {
+					Value string `xml:",omitempty"`
+				} `xml:",omitempty"`
+				MaximumHeartRateBpm struct {
+					Value string `xml:",omitempty"`
+				} `xml:",omitempty"`
+				Intensity     string `xml:",omitempty"`
+				TriggerMethod string `xml:",omitempty"`
+				Track         struct {
 					Trackpoint []Trackpoint
-				}
+				} `xml:",omitempty"`
 			}
 		}
 	}
